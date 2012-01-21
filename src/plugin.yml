@@ -1,0 +1,20 @@
+name: Buddha Mode
+main: org.kitteh.buddha.mode
+version: 2.1
+website: http://kitteh.org
+author: mbaxter
+description: Never die! Only... nearly die.
+commands:
+  buddha:
+    description: buddha mode toggle!
+    usage: /buddha
+permissions:
+  buddha.use:
+    default: false
+    description: Ability to use buddha mode
+  buddha.inform:
+    default: false
+    description: Informed of near-death experiences
+  buddha.autoenlightened:
+    default: false
+    description: On-join enlightenment
