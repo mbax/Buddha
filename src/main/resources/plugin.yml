@@ -1,5 +1,5 @@
 name: Buddha Mode
-main: org.kitteh.buddha.mode
+main: org.kitteh.buddha.BuddhaMode
 version: '${project.version}'
 website: http://kitteh.org
 author: mbaxter

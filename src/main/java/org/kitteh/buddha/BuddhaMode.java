@@ -14,18 +14,18 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class mode extends JavaPlugin implements Listener {
+public class BuddhaMode extends JavaPlugin implements Listener {
 
     private final HashSet<String> enlightened = new HashSet<String>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if ((sender instanceof Player) && sender.hasPermission("buddha.use")) {
-            if (mode.this.enlightened.contains(sender.getName())) {
-                mode.this.enlightened.remove(sender.getName());
+            if (BuddhaMode.this.enlightened.contains(sender.getName())) {
+                BuddhaMode.this.enlightened.remove(sender.getName());
                 sender.sendMessage(ChatColor.YELLOW + "You are no longer enlightened.");
             } else {
-                mode.this.enlightened.add(sender.getName());
+                BuddhaMode.this.enlightened.add(sender.getName());
                 sender.sendMessage(ChatColor.YELLOW + "You feel enlightened.");
             }
         } else {
