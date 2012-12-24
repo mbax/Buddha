@@ -4,46 +4,66 @@ import java.util.HashSet;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class mode extends JavaPlugin {
+public class mode extends JavaPlugin implements Listener {
 
-    private class BuddhaCommand implements CommandExecutor {
-
-        @Override
-        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if ((sender instanceof Player) && sender.hasPermission("buddha.use")) {
-                if (mode.this.enabled.contains(sender.getName())) {
-                    mode.this.enabled.remove(sender.getName());
-                    sender.sendMessage(ChatColor.YELLOW + "You are no longer enlightened.");
-                } else {
-                    mode.this.enabled.add(sender.getName());
-                    sender.sendMessage(ChatColor.YELLOW + "You feel enlightened.");
-                }
-            } else {
-                sender.sendMessage("Error: Not sufficiently enlightened.");
-            }
-            return true;
-        }
-
-    }
-
-    public HashSet<String> enabled;
+    private final HashSet<String> enlightened = new HashSet<String>();
 
     @Override
-    public void onDisable() {
-        this.getServer().getLogger().info("BuddhaMode disabled");
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if ((sender instanceof Player) && sender.hasPermission("buddha.use")) {
+            if (mode.this.enlightened.contains(sender.getName())) {
+                mode.this.enlightened.remove(sender.getName());
+                sender.sendMessage(ChatColor.YELLOW + "You are no longer enlightened.");
+            } else {
+                mode.this.enlightened.add(sender.getName());
+                sender.sendMessage(ChatColor.YELLOW + "You feel enlightened.");
+            }
+        } else {
+            sender.sendMessage("Error: Not sufficiently enlightened.");
+        }
+        return true;
     }
 
     @Override
     public void onEnable() {
-        this.getCommand("buddha").setExecutor(new BuddhaCommand());
-        this.enabled = new HashSet<String>();
-        this.getServer().getPluginManager().registerEvents(new listener(this), this);
-        this.getServer().getLogger().info("BuddhaMode enabled");
+        this.getServer().getPluginManager().registerEvents(this, this);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            final Player player = (Player) event.getEntity();
+            if (this.enlightened.contains(player.getName())) {
+                if (event.getDamage() >= player.getHealth()) {
+                    event.setDamage(player.getHealth() - 1);
+                    if (player.hasPermission("buddha.inform")) {
+                        player.sendMessage(ChatColor.YELLOW + "You nearly died!");
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        if (event.getPlayer().hasPermission("buddha.autoenlightened")) {
+            this.enlightened.add(event.getPlayer().getName());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        this.enlightened.remove(event.getPlayer().getName());
     }
 
 }
