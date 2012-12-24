@@ -1,6 +1,6 @@
 name: Buddha Mode
 main: org.kitteh.buddha.mode
-version: 2.1
+version: '${project.version}'
 website: http://kitteh.org
 author: mbaxter
 description: Never die! Only... nearly die.
